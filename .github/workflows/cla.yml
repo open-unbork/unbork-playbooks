@@ -26,18 +26,24 @@ name: CLA
 # no GitHub account); claude[bot] is the Claude GitHub app. Because an
 # unlinked author name can be set by anyone, the allowlist is a
 # convenience, not an identity check: review who wrote a fork PR's commits.
+# A company's CCLA Schedule A logins are added to `allowlist` here and in
+# open-unbork/unbork's copy of this file.
+#
+# path-to-document is a permalink to the commit that holds the v1 text, so
+# what signers are shown cannot drift with later edits on dev. A new text
+# is v2 (see legal/cla/README.md), with a new permalink and signatures file.
 
 on:
   issue_comment:
     types: [created]
   pull_request_target:
-    types: [opened, closed, synchronize]
+    # No `closed`: upstream uses it only to lock merged PRs, which is off.
+    types: [opened, synchronize]
 
 permissions:
   actions: write
   contents: read
   pull-requests: write
-  statuses: write
 
 concurrency:
   group: cla-${{ github.event.pull_request.number || github.event.issue.number }}
@@ -45,12 +51,12 @@ concurrency:
 
 jobs:
   CLAAssistant:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     if: >-
       github.event_name == 'pull_request_target' ||
       (github.event.issue.pull_request &&
        (github.event.comment.body == 'recheck' ||
-        github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA'))
+        contains(github.event.comment.body, 'I hereby sign the CLA')))
     steps:
       - name: CLA Assistant
         uses: contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08 # v2.6.1
@@ -59,10 +65,13 @@ jobs:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         with:
           path-to-signatures: signatures/v1/cla.json
-          path-to-document: https://github.com/open-unbork/unbork/blob/dev/legal/cla/v1/ICLA.md
+          path-to-document: https://github.com/open-unbork/unbork/blob/69ea4eeb5bece8406b4a98b7159835a4a6afba91/legal/cla/v1/ICLA.md
           branch: main
           remote-organization-name: open-unbork
           remote-repository-name: cla-signatures
           allowlist: therealscienta,dependabot[bot],github-actions[bot],claude[bot],Claude
+          # Keep in step with the job's if: above (which matches a part of it,
+          # so a trailing full stop or newline still starts the run) and with
+          # legal/cla/README.md and ICLA.md, which quote it.
           custom-pr-sign-comment: I have read the CLA Document and I hereby sign the CLA
           lock-pullrequest-aftermerge: false
