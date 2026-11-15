@@ -84,7 +84,7 @@
       {{ ('TLS handshake failed' ~ ('' if _probe.skip_verify | bool else ' or the certificate did not verify'))
          if _tls | bool else 'no HTTP response' }}
     _hint: >-
-      {{ ' If the endpoint uses a private CA, turn off TLS verification on the destination in LabDog'
+      {{ ' If the endpoint uses a private CA, turn off TLS verification on the destination in unbork'
          ~ ' or set alloy_tls_insecure_skip_verify.' if (_tls | bool and not _probe.skip_verify | bool) else '' }}
   ansible.builtin.fail:
     msg: "{{ _probe.name }} URL {{ _probe.url }} is unreachable from this host: {{ _what }} ({{ _why }}). Nothing was changed.{{ _hint | default('', true) }}"

@@ -19,13 +19,13 @@
     _workers_to_drain: "{{ _k8s_to_drain | select('in', groups['k8s_worker'] | default([])) | list }}"
   block:
     - name: The surge node is in this run
-      # LabDog drops a host whose snapshot failed, and the surge node
+      # unbork drops a host whose snapshot failed, and the surge node
       # has to be a member of the targeted group to be in the run at all.
       ansible.builtin.assert:
         that: surge_node in groups['all']
         fail_msg: >-
           Surge node "{{ surge_node }}" is not in this run. Add the host to
-          the LabDog group you are upgrading (or check whether its snapshot
+          the unbork group you are upgrading (or check whether its snapshot
           failed). Hosts in the run: {{ groups['all'] | join(', ') }}.
         quiet: true
 

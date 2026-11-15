@@ -17,13 +17,13 @@ destructive: true
 supports_group: true
 supports_host: true
 
-# The action checks Alloy after its own restart; LabDog runs this as the
+# The action checks Alloy after its own restart; unbork runs this as the
 # post-run verify on hosts it snapshotted, and restores the snapshot if it
 # fails.
 verify_playbook: verify.yml
 verify_timeout_seconds: 120
 
-# Tie into LabDog's Grafana integration: LabDog fills these playbook vars
+# Tie into unbork's Grafana integration: unbork fills these playbook vars
 # per host from the Mimir / Loki instances that host ships to (its own
 # assignment, its highest-priority group's, or the default), and always
 # injects labdog_host_id / labdog_hostname so the shipped data is
@@ -67,7 +67,7 @@ parameters:
     help_text: >-
       By default the run fails if Alloy files it didn't write already define
       prometheus.remote_write or loki.write, because that ships everything
-      twice. Tick to add LabDog's pipeline next to them anyway.
+      twice. Tick to add unbork's pipeline next to them anyway.
 
 # After a successful run, register the package + service so labdog
 # manages them going forward (drift checks notice them, Host detail

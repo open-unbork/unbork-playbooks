@@ -2,7 +2,7 @@ key: example-ai-verify
 name: Example / AI Verify Probe
 description: >-
   The same harmless probe as `example`, but the post-run verdict comes
-  from LabDog's AI verify step instead of a verify playbook. Writes a
+  from unbork's AI verify step instead of a verify playbook. Writes a
   timestamped marker to the host, then hands the collected evidence —
   managed services, packages, load, disk, and recent journal errors — to
   the configured AI provider and asks whether the host came through
@@ -20,7 +20,7 @@ supports_host: true
 supports_group: true
 
 # Deliberately no `verify_playbook`. That field wins outright — when a
-# manifest declares one, LabDog runs it and never reaches the built-in
+# manifest declares one, unbork runs it and never reaches the built-in
 # check that AI verification lives behind. A pack shipping a verify
 # playbook is already answering this question in code, so adding an
 # ai_verify_prompt next to one would be silently ignored. That is the

@@ -6,7 +6,7 @@ Prometheus/Mimir and journal + file logs to Loki, with optional Docker
 auto-detection. Anything more advanced (database exporters, app-specific
 scrapes) is left for you to add.
 
-LabDog operators surface this as the **Install Alloy agent** action on the
+unbork operators surface this as the **Install Alloy agent** action on the
 host and group views.
 
 ## What a run does
@@ -46,7 +46,7 @@ alone; the others carry on.
    and the run **still fails**, saying what went wrong and whether Alloy is
    back up.
 
-LabDog then runs `verify.yml` (the same health check) as the action's
+unbork then runs `verify.yml` (the same health check) as the action's
 post-run verify, and on VM hosts restores its snapshot if that fails.
 
 The action is idempotent: a rerun with the same settings changes nothing
@@ -55,7 +55,7 @@ and only refresh the config.
 
 ### Dry run
 
-The run's preview (LabDog's dry-run toggle, which needs a LabDog that
+The run's preview (unbork's dry-run toggle, which needs an unbork that
 passes `--check`, or `ansible-playbook --check`) runs the read-only checks,
 reachability included, renders the staging copy, and reports what would
 change. It doesn't install, write live files or restart anything.
@@ -64,17 +64,17 @@ change. It doesn't install, write live files or restart anything.
 
 | Mode | When | What happens |
 |---|---|---|
-| **fresh** | Package absent, **or** the config dir is LabDog's | LabDog owns `/etc/alloy/conf.d/`; its files use bare names. |
-| **adopt_dir** | Package present, `CONFIG_FILE` is a directory LabDog doesn't own | LabDog's files go **into that directory** with a `labdog_` prefix, next to the operator's, and Alloy is **reloaded** (no downtime) when the unit supports it. |
-| **adopt_file** | Package present, `CONFIG_FILE` is a single file (or unset) | LabDog creates `/etc/alloy/conf.d/`, **copies the operator's file in** unchanged (the original stays on disk as a backup), adds its own files, points `CONFIG_FILE` at the directory and **restarts** Alloy. |
+| **fresh** | Package absent, **or** the config dir is unbork's | unbork owns `/etc/alloy/conf.d/`; its files use bare names. |
+| **adopt_dir** | Package present, `CONFIG_FILE` is a directory unbork doesn't own | unbork's files go **into that directory** with a `labdog_` prefix, next to the operator's, and Alloy is **reloaded** (no downtime) when the unit supports it. |
+| **adopt_file** | Package present, `CONFIG_FILE` is a single file (or unset) | unbork creates `/etc/alloy/conf.d/`, **copies the operator's file in** unchanged (the original stays on disk as a backup), adds its own files, points `CONFIG_FILE` at the directory and **restarts** Alloy. |
 
-### What counts as LabDog's
+### What counts as unbork's
 
 Every file this pack writes starts with `// Managed by Ansible`. A file
 without that first line is the operator's: the action never overwrites,
 rewrites or deletes it, and refuses to run if it would have to.
 
-A directory is LabDog's when it has the `.labdog-managed` marker, or when
+A directory is unbork's when it has the `.labdog-managed` marker, or when
 one of its files with a bare pack name (`endpoints.alloy`, ...) carries
 the header, which is how installs from older versions of this pack are
 recognised. Being `/etc/alloy/conf.d` is **not** enough on its own: an
@@ -84,10 +84,10 @@ taken over.
 ### Existing pipelines
 
 Alloy loads every file in its directory together. If the operator's files
-already define `prometheus.remote_write` or `loki.write`, adding LabDog's
+already define `prometheus.remote_write` or `loki.write`, adding unbork's
 pipeline would ship the host's metrics and logs twice, so the run fails and
-names those files. Either move the hand-maintained endpoints onto LabDog's
-settings (see **Moving a hand-maintained endpoints config onto LabDog**
+names those files. Either move the hand-maintained endpoints onto unbork's
+settings (see **Moving a hand-maintained endpoints config onto unbork**
 below), or set **Allow existing pipelines**
 (`alloy_allow_existing_pipelines`) if shipping twice is intended.
 
@@ -96,7 +96,7 @@ below), or set **Allow existing pipelines**
 The pack has **no default URLs**: a host without a destination fails before
 anything is touched.
 
-From LabDog, each host ships to its own destinations. They are picked from
+From unbork, each host ships to its own destinations. They are picked from
 the Mimir and Loki instances registered under **Integrations → Grafana**, in
 this order:
 
@@ -110,7 +110,7 @@ instead. The Mimir tenant comes from the Mimir instance's org ID
 means no header, Loki's single-tenant mode). "Verify TLS" off on an
 instance turns on `insecure_skip_verify` for that endpoint only.
 
-Outside LabDog, pass the variables yourself:
+Outside unbork, pass the variables yourself:
 
 | Variable | Default | Notes |
 |---|---|---|
@@ -142,16 +142,16 @@ TCP connection to loki.example:3100 failed`.
 
 ### Identity labels
 
-LabDog injects `labdog_host_id` and `labdog_hostname` per host. The config
+unbork injects `labdog_host_id` and `labdog_hostname` per host. The config
 stamps both on metrics (`external_labels`) and on logs (the shared
-`loki.relabel "labdog"`), so LabDog can query a host's data back on its
-host page. Outside LabDog they default to empty / `inventory_hostname`, and
+`loki.relabel "labdog"`), so unbork can query a host's data back on its
+host page. Outside unbork they default to empty / `inventory_hostname`, and
 an empty label is dropped.
 
 ### Labels dropped before sending
 
 cAdvisor copies every Docker label onto each container series. With
-LabDog's two identity labels, image and compose metadata pushed some
+unbork's two identity labels, image and compose metadata pushed some
 series past Mimir's default limit of 30 labels, and those pushes got an
 HTTP 400. The Mimir `remote_write` drops labels matching
 `alloy_drop_label_regex`:
@@ -185,7 +185,7 @@ position at all starts at its end instead of re-sending its history.
 The old position directories are left in place; they are small and
 harmless.
 
-## Moving a hand-maintained endpoints config onto LabDog
+## Moving a hand-maintained endpoints config onto unbork
 
 For a host whose operator-written file (often `endpoints.alloy`, without
 the `// Managed by Ansible` header) defines its own `prometheus.remote_write`
@@ -194,7 +194,7 @@ or `loki.write`. The action refuses such a host until this is done (or
 
 1. Note the URLs, tenants (`X-Scope-OrgID` / `tenant_id`) and TLS settings
    in the file.
-2. In LabDog, under **Integrations → Grafana**, register a Mimir and a Loki
+2. In unbork, under **Integrations → Grafana**, register a Mimir and a Loki
    instance for each URL that isn't registered yet, with the tenant in
    **Org ID** and **Verify TLS** matching.
 3. Assign them to the host (host page → **Metrics**) or to its group (group
@@ -204,9 +204,9 @@ or `loki.write`. The action refuses such a host until this is done (or
    `grep -rnE '(prometheus\.remote_write|loki\.write)\.<label>' <config dir>`
    (`<label>` is the quoted name, for example `default`). Those are
    `forward_to` lists in other files that the operator owns.
-5. Point those references at LabDog's pipeline (`prometheus.remote_write.labdog.receiver`
+5. Point those references at unbork's pipeline (`prometheus.remote_write.labdog.receiver`
    / `loki.relabel.labdog.receiver`), or delete the pipelines that are now
-   duplicates of LabDog's own (node metrics, journal, `/var/log`, Docker).
+   duplicates of unbork's own (node metrics, journal, `/var/log`, Docker).
 6. Move the endpoints file out of Alloy's config directory (keep it as a
    backup) or delete it.
 7. Run **Install Alloy agent** with **Dry run** on that host and check it
@@ -237,7 +237,7 @@ prefixed `_alloy_`.
 | `role-alloy-linux-apply` | Back up, migrate positions, install files, restart/reload, health check; restore on failure |
 | `role-alloy-linux-health` | Health check, shared with `verify.yml` |
 
-All roles are private to this action. LabDog copies only `playbook.yml`
+All roles are private to this action. unbork copies only `playbook.yml`
 into its run directory and puts `roles/` on `ANSIBLE_ROLES_PATH`, so
 everything the playbook needs is a role.
 
@@ -274,7 +274,7 @@ See [`manifest.yml`](./manifest.yml).
 | `alloy_loki_url` | string | each host's own | Same, for Loki |
 | `alloy_config_only` | bool | `false` | Skip install, refresh config only (Alloy must be installed) |
 | `alloy_detect_services` | bool | `true` | Auto-detect a running Docker daemon |
-| `alloy_allow_existing_pipelines` | bool | `false` | Add LabDog's pipeline even if other files already ship |
+| `alloy_allow_existing_pipelines` | bool | `false` | Add unbork's pipeline even if other files already ship |
 
 Other tunables live in `roles/role-alloy-linux-state/defaults/main.yml`.
 
@@ -295,4 +295,4 @@ Other tunables live in `roles/role-alloy-linux-state/defaults/main.yml`.
    `role-alloy-linux-detect` and `role-alloy-linux-services` (this pack
    ships Docker only).
 4. **Override the whole action**: copy `actions/alloy-install/` into another
-   pack and pin it as the winner in LabDog.
+   pack and pin it as the winner in unbork.

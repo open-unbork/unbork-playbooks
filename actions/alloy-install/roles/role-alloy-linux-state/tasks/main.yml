@@ -81,19 +81,19 @@
   check_mode: false
   when: _alloy_found.files | length > 0
 
-- name: Check whether the current config directory carries the LabDog marker
+- name: Check whether the current config directory carries the unbork marker
   ansible.builtin.stat:
     path: "{{ _alloy_current_config_target }}/{{ alloy_managed_marker }}"
   register: _alloy_marker_stat
   when: _alloy_target_is_dir | bool
 
-# A directory is LabDog's when it has the marker, or when it holds one of
+# A directory is unbork's when it has the marker, or when it holds one of
 # this pack's files under its bare name with the pack's header: that is a
 # host installed by an older version of this pack, before the marker. A
 # directory at the default path with neither is the operator's, even if it
 # is /etc/alloy/conf.d. (Earlier versions treated the default path as
-# LabDog's on sight, and overwrote operator files there.)
-- name: Record LabDog ownership of the current config directory
+# unbork's on sight, and overwrote operator files there.)
+- name: Record unbork ownership of the current config directory
   vars:
     _written: "{{ _alloy_header_scan.stdout_lines | default([]) }}"
     _bare_pack: >-
@@ -106,7 +106,7 @@
               or (_written | intersect(_bare_pack) | length > 0)) }}
 
 # Mode selection
-#   fresh      package absent, or a LabDog-owned directory (re-run)
+#   fresh      package absent, or an unbork-owned directory (re-run)
 #   adopt_dir  package present, reading an operator-owned directory
 #   adopt_file package present, reading a single file (or nothing yet)
 - name: Select the install / adopt mode

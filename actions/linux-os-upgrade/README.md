@@ -5,7 +5,7 @@ the release codename in `/etc/apt/sources.list` and
 `/etc/apt/sources.list.d/`, then runs `apt full-upgrade`. Targets a
 single host or a whole group.
 
-LabDog operators surface this as the **Upgrade OS release** action on
+unbork operators surface this as the **Upgrade OS release** action on
 the host and group views.
 
 This action is intentionally separate from
@@ -38,7 +38,7 @@ crossing release boundaries warrants a deliberate operator choice.
    warrants a reboot, regardless of `/var/run/reboot-required`.
 
 The action is **destructive** (`destructive: true`) — when the host
-has a Proxmox VM mapping LabDog snapshots before the run and rolls
+has a Proxmox VM mapping unbork snapshots before the run and rolls
 back on verify failure.
 
 ## Manifest parameters
@@ -60,13 +60,13 @@ before rewriting sources, preventing accidental version skips
 ## Targeting
 
 - `supports_group: true`, `supports_host: true` — runs against either.
-- `execution_mode: per_host` (default) — LabDog generates a
+- `execution_mode: per_host` (default) — unbork generates a
   single-host inventory per run and fans out across the group.
 
 ## Verify
 
 This action does not declare a `verify_playbook` in its manifest, so
-LabDog falls back to the built-in Python verify (SSH, load, disk,
+unbork falls back to the built-in Python verify (SSH, load, disk,
 systemd). Operators wanting a stricter post-upgrade gate can point
 the manifest at [`verify/post-upgrade.yml`](../../verify/post-upgrade.yml)
 or supply their own.

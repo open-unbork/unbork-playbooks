@@ -1,6 +1,6 @@
 ---
 # A step of the upgrade failed. Cordon state lives in the API server,
-# not on the node, so a LabDog VM rollback would not undo it: clean it
+# not on the node, so an unbork VM rollback would not undo it: clean it
 # up here when that is safe, and say what was left behind when not.
 
 - name: Uncordon the node — nothing on it changed yet

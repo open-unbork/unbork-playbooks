@@ -43,11 +43,11 @@ k8s_coredns_migratable_plugins:
   - transfer
 
 # Preview mode: report_only, or a real `ansible-playbook --check` (what
-# LabDog's dry run passes since labdog#264). In both, the role runs every
+# unbork's dry run passes since labdog#264). In both, the role runs every
 # read-only check, prints the plan, and changes nothing. Under --check
 # the mutating commands would be skipped anyway, but later steps read
 # their output and fail with a misleading error, so the role stops
-# before them instead. An `ansible_check_mode` extra-var (LabDog before
+# before them instead. An `ansible_check_mode` extra-var (unbork before
 # #264) is overridden by ansible-core, so it does not trigger this.
 k8s_preview: "{{ report_only | bool or ansible_check_mode | default(false) | bool }}"
 

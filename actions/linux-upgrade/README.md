@@ -4,7 +4,7 @@ Standard package upgrade for Debian / Ubuntu hosts: `apt update && apt
 upgrade`, then reboot if `/var/run/reboot-required` is set. Targets a
 single host or a whole group.
 
-LabDog operators surface this as the **Upgrade Linux packages** action
+unbork operators surface this as the **Upgrade Linux packages** action
 on the host and group views.
 
 ## What it does
@@ -19,14 +19,14 @@ on the host and group views.
    true.
 
 The action is **destructive** (`destructive: true`) — when the host
-has a Proxmox VM mapping LabDog snapshots before the run and rolls
+has a Proxmox VM mapping unbork snapshots before the run and rolls
 back on verify failure.
 
 ## Verify
 
 This action declares
 [`verify_playbook: ../../verify/post-upgrade.yml`](../../verify/post-upgrade.yml)
-with a 180-second timeout. After the upgrade finishes, LabDog runs
+with a 180-second timeout. After the upgrade finishes, unbork runs
 that playbook against the host and uses its exit status as the
 success gate. The verify covers:
 
@@ -60,7 +60,7 @@ Tunables not exposed in the UI (edit
 ## Targeting
 
 - `supports_group: true`, `supports_host: true` — runs against either.
-- `execution_mode: per_host` (default) — LabDog generates a
+- `execution_mode: per_host` (default) — unbork generates a
   single-host inventory per run and fans out across the group.
 
 ## Requirements

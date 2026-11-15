@@ -7,7 +7,7 @@
 
 - name: Work out which parameters are wrong
   # One line per bad parameter, so the message names only those. The
-  # labels are the ones the LabDog form shows.
+  # labels are the ones the unbork form shows.
   vars:
     _checks:
       - ok: '{{ target_version is match("^[0-9]+\.[0-9]+\.[0-9]+$") }}'
@@ -74,26 +74,26 @@
          | map(attribute='metadata.name') | list }}
 
 - name: Every inventory hostname is a Kubernetes node
-  # LabDog treats inventory hostnames and Kubernetes node names as
+  # unbork treats inventory hostnames and Kubernetes node names as
   # identical. If they differ (DNS short vs FQDN, or operator
   # mistake during cluster bootstrap) every kubectl drain/uncordon
   # would target a non-existent node, so fail fast.
   ansible.builtin.assert:
     that: _k8s_unknown | length == 0
     fail_msg: >-
-      These LabDog hosts are not Kubernetes nodes by that name:
+      These unbork hosts are not Kubernetes nodes by that name:
       {{ _k8s_unknown | join(', ') }}. Inventory hostnames must equal
       node names. Cluster nodes: {{ _k8s_api_nodes | join(', ') }}.
 
 - name: Every Kubernetes node is in the run
-  # LabDog drops a host from the inventory when its snapshot fails, and
+  # unbork drops a host from the inventory when its snapshot fails, and
   # a group may simply not hold every node. Either way the cluster would
   # end the run half upgraded, so refuse unless the operator opted in.
   ansible.builtin.assert:
     that: _k8s_missing | length == 0 or allow_partial_group | bool
     fail_msg: >-
       These cluster nodes are not in this run: {{ _k8s_missing | join(', ') }}.
-      Add them to the LabDog group (or check whether their snapshot
+      Add them to the unbork group (or check whether their snapshot
       failed), or turn on "Allow nodes outside the group" to leave them
       on their current version.
 
@@ -170,7 +170,7 @@
     msg: >-
       WARNING: this cluster has {{ groups['k8s_control_plane'] | length }}
       control-plane nodes with stacked etcd. If a control-plane node fails,
-      LabDog's snapshot rollback would restore it and break its etcd
+      unbork's snapshot rollback would restore it and break its etcd
       member. Run this action with snapshots turned off for HA clusters;
       the etcd snapshot written to {{ etcd_backup_dir }} on
       {{ inventory_hostname }} is the recovery path.

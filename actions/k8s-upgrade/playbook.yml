@@ -1,7 +1,7 @@
 ---
 # k8s-upgrade — group-targeted action.
 #
-# LabDog runs this playbook **once per group** with a flat inventory:
+# unbork runs this playbook **once per group** with a flat inventory:
 #
 #   all:
 #     hosts:
@@ -9,7 +9,7 @@
 #       node-2: { ... }
 #       node-3: { ... }
 #
-# `supports_host: false` in the manifest tells LabDog to dispatch
+# `supports_host: false` in the manifest tells unbork to dispatch
 # group-targeted runs as a single ansible-playbook invocation against
 # all members (instead of fanning out per-host). The playbook itself
 # discovers control-plane vs worker nodes — no labdog-side roles or
@@ -56,7 +56,7 @@
         fail_msg: >-
           No control-plane node detected in this group
           (looked for /etc/kubernetes/manifests/kube-apiserver.yaml).
-          Verify the targeted LabDog group contains every node of the
+          Verify the targeted unbork group contains every node of the
           cluster, including at least one control-plane node.
       run_once: true  # noqa: run-once
 

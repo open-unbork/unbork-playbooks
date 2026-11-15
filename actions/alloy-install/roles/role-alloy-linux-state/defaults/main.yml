@@ -4,9 +4,9 @@
 # operator-facing knob lives here once.
 
 # --- Destinations --------------------------------------------------------
-# LabDog fills these per host from the Mimir / Loki instances the host
+# unbork fills these per host from the Mimir / Loki instances the host
 # resolves to (its own, its highest-priority group's, or the default).
-# Outside LabDog, pass them as extra-vars. There is no fallback URL: a run
+# Outside unbork, pass them as extra-vars. There is no fallback URL: a run
 # without one fails before touching the host, rather than shipping to a
 # made-up "prometheus:9090".
 alloy_prometheus_url: ""
@@ -19,21 +19,21 @@ alloy_mimir_org_id: "anonymous"
 alloy_loki_tenant_id: ""
 
 # Skip TLS certificate verification. The per-endpoint values default to the
-# shared one; LabDog sets them from each instance's "verify TLS" setting.
+# shared one; unbork sets them from each instance's "verify TLS" setting.
 alloy_tls_insecure_skip_verify: false
 alloy_prometheus_tls_insecure_skip_verify: "{{ alloy_tls_insecure_skip_verify }}"
 alloy_loki_tls_insecure_skip_verify: "{{ alloy_tls_insecure_skip_verify }}"
 
-# LabDog identity labels stamped on every shipped series and log line so
-# LabDog can query a host's data back. Injected by LabDog; empty outside it
+# unbork identity labels stamped on every shipped series and log line so
+# unbork can query a host's data back. Injected by unbork; empty outside it
 # (an empty label value is dropped, so nothing is added).
 labdog_host_id: ""
 labdog_hostname: "{{ inventory_hostname }}"
 
 # --- Existing Alloy configs ----------------------------------------------
-# Alloy files LabDog didn't write that define their own
+# Alloy files unbork didn't write that define their own
 # prometheus.remote_write or loki.write already ship somewhere. Adding
-# LabDog's pipeline next to them would ship the same metrics and logs
+# unbork's pipeline next to them would ship the same metrics and logs
 # twice, so the run fails and names them unless this is set.
 alloy_allow_existing_pipelines: false
 
@@ -51,7 +51,7 @@ alloy_pack_files:
   - linux_file_logs.alloy
   - docker.alloy
 
-# Marker dropped inside a LabDog-owned config directory.
+# Marker dropped inside an unbork-owned config directory.
 alloy_managed_marker: .labdog-managed
 
 # --- Layout ----------------------------------------------------------------
@@ -88,7 +88,7 @@ alloy_position_migrations:
 
 # --- Metrics ------------------------------------------------------------
 # cAdvisor copies every Docker label onto each container series. With
-# LabDog's two identity labels, image and compose metadata pushed some
+# unbork's two identity labels, image and compose metadata pushed some
 # series past Mimir's default limit of 30 labels, and pushes got a 400.
 # Dropped on the way out (write_relabel_config).
 alloy_drop_label_regex: >-

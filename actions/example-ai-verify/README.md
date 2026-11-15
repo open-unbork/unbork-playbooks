@@ -1,7 +1,7 @@
 # example-ai-verify — AI Verify Probe
 
 The same harmless probe as [`example`](../example/), with one difference:
-the post-run verdict comes from LabDog's **AI verify step** rather than
+the post-run verdict comes from unbork's **AI verify step** rather than
 from a verify playbook.
 
 ```
@@ -11,12 +11,12 @@ Proxmox snapshot → run → SSH health checks → AI verdict → (rollback on F
 No production changes are made. Use it to:
 
 - Confirm the AI verify path is wired up end to end on your instance
-- See what evidence LabDog collects and hands to the model
+- See what evidence unbork collects and hands to the model
 - Watch the model judge something genuinely ambiguous
 
 ## Why this is a separate action
 
-`verify_playbook` wins outright. When a manifest declares one, LabDog
+`verify_playbook` wins outright. When a manifest declares one, unbork
 runs it and never reaches the built-in health check that AI verification
 lives behind — so an `ai_verify_prompt` sitting next to a
 `verify_playbook` is silently ignored. `example` declares a verify
@@ -27,7 +27,7 @@ The distinction is worth keeping in mind when writing your own packs:
 | | Decides success by |
 |---|---|
 | `verify_playbook` | Running your Ansible tasks. Deterministic, and you write the rules. |
-| `ai_verify_prompt` | Asking a question in words about evidence LabDog collected. Judgement, and it can weigh things you did not anticipate. |
+| `ai_verify_prompt` | Asking a question in words about evidence unbork collected. Judgement, and it can weigh things you did not anticipate. |
 
 They are alternatives, not layers.
 
@@ -60,14 +60,14 @@ anomalies behind.
 
 An earlier version of this prompt did not mention attribution. The model
 correctly identified the entry, correctly noted it came from
-`labdog-example`, and failed the host anyway — so LabDog restored the
+`labdog-example`, and failed the host anyway — so unbork restored the
 pre-change snapshot and rolled back a run that had worked.
 
 That is the trap every AI verify prompt has to avoid. `linux-upgrade`
 restarts services; services log errors while restarting; a prompt that
 does not account for that can revert a successful upgrade. See
 [Writing the prompt](https://github.com/open-unbork/unbork/blob/main/docs/ui/actions.md#writing-the-prompt)
-in LabDog's action docs.
+in unbork's action docs.
 
 Note what the prompt does *not* say: it never tells the model to ignore
 errors. A managed service that is still down is still a `FAIL`. The
@@ -78,12 +78,12 @@ distinction is attribution, not leniency.
 Beyond the usual snapshot/verify gate (destructive action, host with a
 Proxmox VM mapping, verify enabled on the run):
 
-- `ai.enabled` turned on in LabDog's settings
+- `ai.enabled` turned on in unbork's settings
 - An AI provider configured and enabled
 
 Without those the AI step is skipped and the action's own result stands,
 because `ai_verify_fail_closed` is left at its default of `false`. See
-[the AI verification section of LabDog's action
+[the AI verification section of unbork's action
 docs](https://github.com/open-unbork/unbork/blob/main/docs/ui/actions.md#ai-verification).
 
 ## What you should see
