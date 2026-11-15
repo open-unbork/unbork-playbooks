@@ -38,7 +38,7 @@
 
 # Written before the package so its postinst doesn't install the default
 # single-file config pointer. Only on a host with no Alloy at all: this
-# role also runs on re-runs over a LabDog-owned directory, where the file
+# role also runs on re-runs over an unbork-owned directory, where the file
 # already points at it and may carry the operator's CUSTOM_ARGS.
 - name: Pre-write /etc/default/alloy before package install
   ansible.builtin.copy:

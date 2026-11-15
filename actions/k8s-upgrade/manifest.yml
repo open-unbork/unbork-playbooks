@@ -20,7 +20,7 @@ destructive: true
 supports_group: true
 supports_host: false
 # The whole cluster runs inside one ansible-playbook invocation, and
-# LabDog's global ansible.playbook_timeout defaults to 300 s. Two hours
+# unbork's global ansible.playbook_timeout defaults to 300 s. Two hours
 # covers about six nodes at the 20-minute worst case; the effective
 # timeout is max(this, the global setting).
 playbook_timeout_seconds: 7200
@@ -43,8 +43,8 @@ parameters:
     default: false
     help_text: >-
       Check the cluster and list what each node would do, without
-      cordoning, installing or restarting anything. LabDog's dry-run
-      toggle does the same on LabDog releases that pass --check.
+      cordoning, installing or restarting anything. unbork's dry-run
+      toggle does the same on unbork releases that pass --check.
   - key: skip_preflight
     label: Skip preflight checks
     type: bool
@@ -76,7 +76,7 @@ parameters:
     default: false
     help_text: >-
       Proceed even when the cluster has nodes that are not in the
-      targeted LabDog group. Those nodes are left on their current version.
+      targeted unbork group. Those nodes are left on their current version.
   - key: skip_capacity_check
     label: Skip the drain capacity check
     type: bool
@@ -91,7 +91,7 @@ parameters:
     type: string
     default: ""
     help_text: >-
-      Optional. A host in this LabDog group that is not a cluster node
+      Optional. A host in this unbork group that is not a cluster node
       yet, but is ready to be one (container runtime, swap off, the
       pkgs.k8s.io repo for the target minor). It joins at the target
       version after the control plane, takes pods while the workers are

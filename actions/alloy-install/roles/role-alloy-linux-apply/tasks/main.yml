@@ -3,7 +3,7 @@
 # (or reloads) Alloy, and checks that it came up on it. Everything is in one
 # block: if any step fails, including Alloy not starting, the rescue puts
 # back the files this run changed, restarts Alloy on its previous config,
-# and still fails the run, so LabDog reports the failure and its own
+# and still fails the run, so unbork reports the failure and its own
 # snapshot rollback (on VM hosts) runs as usual.
 #
 # Inputs: role-alloy-linux-state (mode, live files, unit state),
@@ -22,7 +22,7 @@
         loop_var: _migration
         label: "{{ _migration.from }} -> {{ _migration.to }}"
 
-    - name: Create the LabDog config directory (fresh / adopt_file)
+    - name: Create the unbork config directory (fresh / adopt_file)
       ansible.builtin.file:
         path: "{{ alloy_confd_dir }}"
         state: directory
@@ -82,11 +82,11 @@
       register: _alloy_c_env
       when: _alloy_mode == 'adopt_file'
 
-    - name: Mark the LabDog config directory as managed
+    - name: Mark the unbork config directory as managed
       ansible.builtin.copy:
         dest: "{{ alloy_confd_dir }}/{{ alloy_managed_marker }}"
         content: |
-          # This directory is managed by LabDog's alloy-install action.
+          # This directory is managed by unbork's alloy-install action.
           # Files starting with "{{ alloy_managed_header }}" are the action's;
           # it never overwrites or deletes any other file here.
         owner: "{{ alloy_user }}"

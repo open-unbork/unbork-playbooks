@@ -1,5 +1,5 @@
 ---
-- name: LabDog example — system probe
+- name: Example action — system probe
   hosts: all
   become: true
 
@@ -55,6 +55,6 @@
         dest: "{{ marker_dir }}/fail-sentinel"
         content: |
           Intentional verify failure requested at {{ ansible_facts['date_time'].iso8601 }}.
-          LabDog should roll this host back to its pre-run snapshot.
+          unbork should roll this host back to its pre-run snapshot.
         mode: "0644"
       when: fail_verify | bool

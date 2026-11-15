@@ -1,7 +1,7 @@
 ---
 # Verify playbook for the 'example' action.
 #
-# LabDog runs this after the main playbook completes. Any task failure
+# unbork runs this after the main playbook completes. Any task failure
 # here marks verify as failed and (because destructive: true) triggers
 # automatic snapshot rollback — the host is restored to its pre-run state.
 #

@@ -11,9 +11,9 @@
       - alloy_loki_url | default('', true) | length > 0
     fail_msg: >-
       No {{ 'Mimir/Prometheus' if not alloy_prometheus_url | default('', true) else 'Loki' }}
-      destination for this host. In LabDog, register one under Integrations →
+      destination for this host. In unbork, register one under Integrations →
       Grafana and assign it to the host or one of its groups (or mark one
-      default). Outside LabDog, pass alloy_prometheus_url and alloy_loki_url.
+      default). Outside unbork, pass alloy_prometheus_url and alloy_loki_url.
     quiet: true
 
 - name: Require http(s) destination URLs
@@ -50,7 +50,7 @@
       this run would replace {{ 'it' if _foreign | length == 1 else 'them' }}.
       Nothing was changed. Move or rename the file, or, if it is a
       hand-maintained endpoints config, see the action's README for moving it
-      onto LabDog's per-host destinations.
+      onto unbork's per-host destinations.
     quiet: true
 
 # --- Existing pipelines --------------------------------------------------
@@ -76,9 +76,9 @@
       {{ _alloy_pipeline_scan.stdout_lines | default([]) | join(', ') }} already
       define{{ 's' if _alloy_pipeline_scan.stdout_lines | default([]) | length == 1 else '' }}
       prometheus.remote_write or loki.write. Alloy loads every file together,
-      so adding LabDog's pipeline would ship this host's metrics and logs a
+      so adding unbork's pipeline would ship this host's metrics and logs a
       second time. Nothing was changed. Remove that pipeline (see the README
-      for moving a hand-maintained endpoints config onto LabDog's settings),
+      for moving a hand-maintained endpoints config onto unbork's settings),
       or set "Allow existing pipelines" if shipping twice is intended.
     quiet: true
 

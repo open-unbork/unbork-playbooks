@@ -2,14 +2,14 @@
 
 Templates pack authors can reference (or copy) to define post-run
 success for destructive actions. All three are plain Ansible playbooks
-— a manifest points at one via `verify_playbook:` and LabDog runs it
+— a manifest points at one via `verify_playbook:` and unbork runs it
 after the main action, using the ansible-runner exit status as the
 pass/fail signal.
 
 The templates here encode the same kind of checks the built-in Python
 verify does (SSH reachable, load sane, disk has headroom, services
 running, packages installed) but as Ansible you can read, copy, and
-extend. When a manifest doesn't declare `verify_playbook`, LabDog
+extend. When a manifest doesn't declare `verify_playbook`, unbork
 falls back to the built-in Python check — the templates here are the
 recommended opt-in replacement.
 
@@ -55,7 +55,7 @@ parameters:
 
 Then inside `playbook.yml` (or a small adapter playbook) convert
 the CSV parameter to a list Ansible can iterate. The cleanest way is
-to use a list-typed parameter — at the moment LabDog's UI supports
+to use a list-typed parameter — at the moment unbork's UI supports
 `string | int | bool | choice`, so list inputs need CSV parsing. If
 you need a rich list input, copy the template into your pack and
 hardcode the list in the playbook `vars:` block.
@@ -85,7 +85,7 @@ in either fails the verify.
 
 The templates are a starting point. The contract for any verify file:
 
-- `hosts: all` (LabDog generates a single-host inventory).
+- `hosts: all` (unbork generates a single-host inventory).
 - Any failed task → verify fails → snapshot rollback fires.
 - Use `ansible.builtin.assert` or `failed_when:` to encode assertions
   explicitly rather than relying on module-level errors; the messages
@@ -96,6 +96,6 @@ The templates are a starting point. The contract for any verify file:
   (each runs in its own ansible-runner working directory). Persist on
   the host if you need to hand state across.
 
-See the main LabDog docs at `docs/ui/actions.md` for the full verify
+See the main unbork docs at `docs/ui/actions.md` for the full verify
 contract, and `docs/examples/action-packs/with-verify/` for a
 worked deploy-and-verify example.

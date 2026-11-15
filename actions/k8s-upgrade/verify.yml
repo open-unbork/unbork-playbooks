@@ -1,7 +1,7 @@
 ---
 # Verify playbook for k8s-upgrade.
 #
-# LabDog runs this once per member, against a single-host inventory,
+# unbork runs this once per member, against a single-host inventory,
 # after the main playbook, with the same extra-vars. A failure here
 # rolls that member back to its pre-run VM snapshot, so it must only
 # fail for a node this run actually upgraded:

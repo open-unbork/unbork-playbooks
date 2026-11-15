@@ -5,13 +5,13 @@ cluster, one node at a time. Control-plane nodes are upgraded first
 (`kubeadm upgrade apply` on the first, `kubeadm upgrade node` on the
 rest), then workers. Apt-only — Debian / Ubuntu hosts.
 
-LabDog operators surface this as the **Upgrade Kubernetes cluster**
+unbork operators surface this as the **Upgrade Kubernetes cluster**
 action on the group view. The action's manifest declares
-`supports_host: false`, which tells LabDog to dispatch the playbook
+`supports_host: false`, which tells unbork to dispatch the playbook
 once against the whole group (a flat `all` Ansible inventory) instead
 of fanning out per-host. The playbook itself decides which nodes are
 control-plane and which are workers — there are no roles to assign in
-the LabDog UI.
+the unbork UI.
 
 ## What it does
 
@@ -94,7 +94,7 @@ See [`manifest.yml`](./manifest.yml).
 | Key | Type | Default | Notes |
 |---|---|---|---|
 | `target_version` | string | required | Semver only (e.g. `1.30.4`). At most one minor above the running control plane. |
-| `report_only` | bool | `false` | Run every check and print what each node would do, without changing anything. A real `--check` run (LabDog's dry run, once it passes `--check`) does the same. Older LabDog dry runs set `ansible_check_mode` as an extra-var, which ansible-core ignores, so they upgrade for real: use `report_only` there. |
+| `report_only` | bool | `false` | Run every check and print what each node would do, without changing anything. A real `--check` run (unbork's dry run, once it passes `--check`) does the same. Older unbork dry runs set `ansible_check_mode` as an extra-var, which ansible-core ignores, so they upgrade for real: use `report_only` there. |
 | `skip_preflight` | bool | `false` | Bypass the per-node checks (kubelet running, target repository readable, packages downloadable). The apt source is still moved and the cache still refreshed. |
 | `drain_timeout` | int | `300` | Seconds `kubectl drain` may take. A drain that fails for another reason (a transient eviction error, such as an eviction webhook whose pod the drain just moved) is retried up to 4 times, 20 s apart (`k8s_drain_retries`, `k8s_drain_retry_delay`); one that hits this timeout is not. |
 | `drain_force` | bool | `false` | Pass `--force` to `kubectl drain`, deleting pods no controller manages. |
@@ -106,7 +106,7 @@ See [`manifest.yml`](./manifest.yml).
 
 The manifest sets `playbook_timeout_seconds: 7200`, which covers about
 six nodes at the 20-minute worst case. For a bigger cluster, raise it in
-a copy of the action or raise LabDog's global `ansible.playbook_timeout`.
+a copy of the action or raise unbork's global `ansible.playbook_timeout`.
 
 ## Drain capacity
 
@@ -168,7 +168,7 @@ workers' pods have somewhere to go:
 
 What the surge host needs:
 
-- to be in the targeted LabDog group, and reachable like any member;
+- to be in the targeted unbork group, and reachable like any member;
 - to be ready to be a node, which the action does not set up: a
   container runtime configured for Kubernetes, swap off, the usual
   kernel modules and sysctls, and a pkgs.k8s.io apt source (any minor:
@@ -243,7 +243,7 @@ never matches `v1.30.40`.
 
 ## Rollback
 
-`destructive: true`, so LabDog snapshots every member that has a
+`destructive: true`, so unbork snapshots every member that has a
 Proxmox VM mapping before the run, runs [`verify.yml`](./verify.yml)
 per member afterwards, and restores a member whose playbook or verify
 failed. `verify.yml` only checks nodes this run upgraded (kubelet on
@@ -259,13 +259,13 @@ Restoring one control-plane node of an **HA cluster with stacked
 etcd** is not safe. It brings back an etcd member with an older raft
 log under the same member ID, which etcd refuses, and that needs a
 manual member remove and re-add. For those clusters, run the action
-with LabDog snapshots turned off and use the etcd snapshot in
+with unbork snapshots turned off and use the etcd snapshot in
 `etcd_backup_dir` as the recovery path. The validation step prints a
 warning when it sees such a cluster. The snapshot lives on the first
 control-plane node, so a VM rollback of that node erases it too: point
 `etcd_backup_dir` at storage that lives elsewhere if you can.
 
-LabDog deletes the snapshots of members that succeeded once the run is
+unbork deletes the snapshots of members that succeeded once the run is
 done, so reverting the whole cluster afterwards is a manual Proxmox job.
 
 ## Requirements
