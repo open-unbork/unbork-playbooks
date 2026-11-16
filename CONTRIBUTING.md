@@ -12,6 +12,8 @@ both repositories:
 - On your first PR the `CLAAssistant` check fails and a bot comments.
   Read the [individual agreement](https://github.com/open-unbork/unbork/blob/dev/legal/cla/v1/ICLA.md),
   then post the sentence the bot quotes. The check turns green.
+- The email your commits carry must be linked to your GitHub account:
+  on a PR from a fork, the `LinkedCommits` check fails otherwise.
 - The agreement is a licence, not an assignment, and the maintainer
   promises that your contribution stays available under
   AGPL-3.0-or-later (or another OSI-approved licence).
