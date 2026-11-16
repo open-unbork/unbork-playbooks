@@ -1,0 +1,134 @@
+name: CLA
+
+# Checks that every commit author on a pull request has signed the
+# contributor licence agreement in legal/cla/ (CLA Assistant Lite).
+# A contributor signs by posting the sentence in `custom-pr-sign-comment`
+# on the pull request; the signature is written to the private
+# open-unbork/cla-signatures repository, which unbork-playbooks shares, so
+# one signature covers both repositories. The agreement texts live in
+# open-unbork/unbork under legal/cla/.
+#
+# SECURITY: this runs on `pull_request_target` and `issue_comment`, so it
+# has a write token and repository secrets even on pull requests from
+# forks. It must never check out or run code from the pull request: there
+# is deliberately no actions/checkout step, the action is pinned to a
+# commit, and permissions are the minimum the action needs.
+#
+# Secrets (organisation secret, scoped to unbork and unbork-playbooks):
+#   * PERSONAL_ACCESS_TOKEN — fine-grained token with Contents read and
+#     write on open-unbork/cla-signatures only. The action reads it under
+#     this exact env name.
+#
+# Allowlist: allowlisted entries skip the check. The action matches a
+# commit's GitHub login when the author's email is linked to an account,
+# and the author *name* otherwise. The commits the maintainer's coding
+# assistant makes (Claude <noreply@anthropic.com>) resolve to the GitHub
+# account `claude`, and to the name "Claude" where they do not;
+# claude[bot] is the Claude GitHub app. Because an
+# unlinked author name can be set by anyone, the allowlist is a
+# convenience, not an identity check. The LinkedCommits job below closes
+# that gap for pull requests from forks (D-49): there, every commit must be
+# linked to a GitHub account as author or committer, so a name cannot pass
+# for an allowlisted login.
+# A company's CCLA Schedule A logins are added to `allowlist` here and in
+# open-unbork/unbork's copy of this file.
+#
+# path-to-document is a permalink to the commit that holds the v1 text, so
+# what signers are shown cannot drift with later edits on dev. A new text
+# is v2 (see legal/cla/README.md), with a new permalink and signatures file.
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_target:
+    # No `closed`: upstream uses it only to lock merged PRs, which is off.
+    types: [opened, synchronize]
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: cla-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  CLAAssistant:
+    runs-on: ubuntu-26.04
+    if: >-
+      github.event_name == 'pull_request_target' ||
+      (github.event.issue.pull_request &&
+       (github.event.comment.body == 'recheck' ||
+        contains(github.event.comment.body, 'I hereby sign the CLA')))
+    steps:
+      - name: CLA Assistant
+        uses: contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08 # v2.6.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        with:
+          path-to-signatures: signatures/v1/cla.json
+          path-to-document: https://github.com/open-unbork/unbork/blob/69ea4eeb5bece8406b4a98b7159835a4a6afba91/legal/cla/v1/ICLA.md
+          branch: main
+          remote-organization-name: open-unbork
+          remote-repository-name: cla-signatures
+          allowlist: therealscienta,dependabot[bot],github-actions[bot],claude[bot],claude,Claude
+          # Keep in step with the job's if: above (which matches a part of it,
+          # so a trailing full stop or newline still starts the run) and with
+          # legal/cla/README.md and ICLA.md, which quote it.
+          custom-pr-sign-comment: I have read the CLA Document and I hereby sign the CLA
+          lock-pullrequest-aftermerge: false
+
+  # D-49: CLA Assistant falls back to the git author name when a commit's
+  # emails are linked to no GitHub account, so a fork could commit as an
+  # allowlisted name. And a git email is not proof of identity either: a
+  # fork can put an allowlisted account's public email on its commits. So
+  # on a pull request from a fork this job fails when any commit
+  #   * has neither a linked author nor a linked committer, or
+  #   * is attributed to an allowlisted account other than the PR's author.
+  # Same-repository branches are the maintainer's and skip it. It reads the
+  # PR through the API only; nothing from the PR is checked out or run, and
+  # only commit SHAs are printed (author names are attacker-chosen text).
+  # ALLOWLISTED holds the logins of CLAAssistant's allowlist, lowercased,
+  # as GitHub resolves them (the coding assistant's commits resolve to the
+  # account `claude`). Keep the two in step.
+  LinkedCommits:
+    runs-on: ubuntu-26.04
+    if: >-
+      github.event_name == 'pull_request_target' &&
+      github.event.pull_request.head.repo.full_name != github.repository
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Every commit is linked to its own GitHub account
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          ALLOWLISTED: therealscienta dependabot[bot] github-actions[bot] claude[bot] claude
+        run: |
+          # The commits API lists at most 250 commits per pull request.
+          commits=$(gh api --paginate "repos/$REPO/pulls/$PR/commits" \
+            --jq '.[] | [.sha[0:12], (.author.login // ""), (.committer.login // "")] | @tsv')
+          status=0
+          unlinked=$(printf '%s\n' "$commits" | awk -F'\t' 'NF && $2 == "" && $3 == "" {print $1}')
+          if [ -n "$unlinked" ]; then
+            echo "These commits are linked to no GitHub account, so the CLA check cannot tell who wrote them:"
+            echo "$unlinked"
+            echo "Add the commit email to your GitHub account (Settings > Emails), then re-run this check or push again."
+            status=1
+          fi
+          borrowed=$(printf '%s\n' "$commits" | awk -F'\t' -v allow="$ALLOWLISTED" -v me="$PR_AUTHOR" '
+            BEGIN { n = split(tolower(allow), a, " "); for (i = 1; i <= n; i++) ok[a[i]] = 1; me = tolower(me) }
+            NF { au = tolower($2); co = tolower($3)
+                 if ((au in ok && au != me) || (co in ok && co != me)) print $1 }')
+          if [ -n "$borrowed" ]; then
+            echo "These commits are attributed to an account the CLA check exempts, which is not the pull request's author:"
+            echo "$borrowed"
+            echo "Commit with your own email, linked to your own GitHub account. See legal/cla/README.md in open-unbork/unbork."
+            status=1
+          fi
+          [ "$status" = 0 ] && echo "Every commit is linked to a GitHub account, and none borrows an exempt one."
+          exit "$status"

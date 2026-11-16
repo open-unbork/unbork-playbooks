@@ -261,4 +261,5 @@ LABDOG_SRC=/tmp/unbork python scripts/validate_manifests.py
 Licensed under the GNU Affero General Public License v3.0 or later
 (**AGPL-3.0-or-later**). See [LICENSE](LICENSE) for the full text.
 
-Copyright © 2026 Dennis Tyresson and contributors.
+Copyright © 2026 Dennis Tyresson and contributors. Contributions are accepted under a
+[contributor licence agreement](CONTRIBUTING.md#licensing--copyright).
