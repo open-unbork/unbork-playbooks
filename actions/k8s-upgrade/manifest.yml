@@ -65,7 +65,7 @@ parameters:
   - key: etcd_backup_dir
     label: etcd backup directory
     type: string
-    default: /var/lib/labdog/etcd-backups
+    default: /var/lib/unbork/etcd-backups
     help_text: >-
       Absolute path on the first control-plane node where the
       pre-upgrade etcd snapshot is written. A VM rollback of that node

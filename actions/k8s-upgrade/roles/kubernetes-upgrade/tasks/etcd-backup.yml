@@ -28,7 +28,7 @@
     _name: "etcd-{{ ansible_facts['date_time'].iso8601_basic_short }}-{{ _k8s_current or 'unknown' }}.db"
     # /var/lib/etcd is the etcd pod's hostPath data volume, so a file
     # written there inside the container appears on the node.
-    _in_pod: "/var/lib/etcd/labdog-{{ _name }}"
+    _in_pod: "/var/lib/etcd/unbork-{{ _name }}"
   block:
     - name: Create the backup directory
       ansible.builtin.file:

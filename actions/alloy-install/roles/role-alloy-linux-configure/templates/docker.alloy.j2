@@ -4,16 +4,16 @@
 // Metrics //
 /////////////
 
-prometheus.exporter.cadvisor "labdog_docker" {
+prometheus.exporter.cadvisor "unbork_docker" {
   docker_host = "unix:///var/run/docker.sock"
 }
 
-prometheus.scrape "labdog_docker" {
-  targets    = prometheus.exporter.cadvisor.labdog_docker.targets
-  forward_to = [prometheus.relabel.labdog_docker.receiver]
+prometheus.scrape "unbork_docker" {
+  targets    = prometheus.exporter.cadvisor.unbork_docker.targets
+  forward_to = [prometheus.relabel.unbork_docker.receiver]
 }
 
-prometheus.relabel "labdog_docker" {
+prometheus.relabel "unbork_docker" {
   rule {
       target_label = "job"
       replacement = "docker"
@@ -36,7 +36,7 @@ prometheus.relabel "labdog_docker" {
   }
 
   forward_to = [
-    prometheus.remote_write.labdog.receiver,
+    prometheus.remote_write.unbork.receiver,
   ]
 }
 
@@ -44,12 +44,12 @@ prometheus.relabel "labdog_docker" {
 /// Logs ///
 ////////////
 
-discovery.docker "labdog_docker" {
+discovery.docker "unbork_docker" {
   host = "unix:///var/run/docker.sock"
 }
 
-discovery.relabel "labdog_docker" {
-  targets = discovery.docker.labdog_docker.targets
+discovery.relabel "unbork_docker" {
+  targets = discovery.docker.unbork_docker.targets
 
   rule {
       target_label = "job"
@@ -73,12 +73,12 @@ discovery.relabel "labdog_docker" {
   }
 }
 
-loki.source.docker "labdog_docker" {
+loki.source.docker "unbork_docker" {
   host          = "unix:///var/run/docker.sock"
-  targets       = discovery.docker.labdog_docker.targets
-  relabel_rules = discovery.relabel.labdog_docker.rules
-  // Route through the shared labdog relabel so docker logs also carry the
-  // labdog_host_id / labdog_hostname identity labels before hitting
-  // loki.write.labdog.
-  forward_to    = [loki.relabel.labdog.receiver]
+  targets       = discovery.docker.unbork_docker.targets
+  relabel_rules = discovery.relabel.unbork_docker.rules
+  // Route through the shared unbork relabel so docker logs also carry the
+  // unbork_host_id / unbork_hostname identity labels before hitting
+  // loki.write.unbork.
+  forward_to    = [loki.relabel.unbork.receiver]
 }

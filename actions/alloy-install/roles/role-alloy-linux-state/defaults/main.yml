@@ -27,8 +27,8 @@ alloy_loki_tls_insecure_skip_verify: "{{ alloy_tls_insecure_skip_verify }}"
 # unbork identity labels stamped on every shipped series and log line so
 # unbork can query a host's data back. Injected by unbork; empty outside it
 # (an empty label value is dropped, so nothing is added).
-labdog_host_id: ""
-labdog_hostname: "{{ inventory_hostname }}"
+unbork_host_id: ""
+unbork_hostname: "{{ inventory_hostname }}"
 
 # --- Existing Alloy configs ----------------------------------------------
 # Alloy files unbork didn't write that define their own
@@ -52,7 +52,7 @@ alloy_pack_files:
   - docker.alloy
 
 # Marker dropped inside an unbork-owned config directory.
-alloy_managed_marker: .labdog-managed
+alloy_managed_marker: .unbork-managed
 
 # --- Layout ----------------------------------------------------------------
 # Default config directory, used for fresh installs and as the directory a
@@ -82,9 +82,13 @@ alloy_http_listen_addr: 127.0.0.1:12345
 # matching log file (with today's timestamp) or the journal's last 24h. A
 # host upgrading carries each old position directory over to the new ID.
 alloy_position_migrations:
-  - { from: loki.source.file.file_logs, to: loki.source.file.labdog_file_logs }
-  - { from: loki.source.journal.journal_logs, to: loki.source.journal.labdog_journal_logs }
-  - { from: loki.source.docker.default, to: loki.source.docker.labdog_docker }
+  - { from: loki.source.file.file_logs, to: loki.source.file.unbork_file_logs }
+  - { from: loki.source.journal.journal_logs, to: loki.source.journal.unbork_journal_logs }
+  - { from: loki.source.docker.default, to: loki.source.docker.unbork_docker }
+  # The pack's components were named labdog_* before the product's rename.  # old-name-ok
+  - { from: loki.source.file.labdog_file_logs, to: loki.source.file.unbork_file_logs }  # old-name-ok
+  - { from: loki.source.journal.labdog_journal_logs, to: loki.source.journal.unbork_journal_logs }  # old-name-ok
+  - { from: loki.source.docker.labdog_docker, to: loki.source.docker.unbork_docker }  # old-name-ok
 
 # --- Metrics ------------------------------------------------------------
 # cAdvisor copies every Docker label onto each container series. With

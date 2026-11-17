@@ -1,4 +1,4 @@
-name: labdog-default
+name: unbork-default
 description: >-
   Default action pack for unbork. A fresh unbork install registers this
   repository as a git pack and syncs it at startup; operators can edit,

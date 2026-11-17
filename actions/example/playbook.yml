@@ -4,7 +4,7 @@
   become: true
 
   vars:
-    marker_dir: /var/lib/labdog-example
+    marker_dir: /var/lib/unbork-example
     fail_verify: false
     ansible_python_interpreter: auto_silent
 

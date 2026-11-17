@@ -65,7 +65,7 @@ change. It doesn't install, write live files or restart anything.
 | Mode | When | What happens |
 |---|---|---|
 | **fresh** | Package absent, **or** the config dir is unbork's | unbork owns `/etc/alloy/conf.d/`; its files use bare names. |
-| **adopt_dir** | Package present, `CONFIG_FILE` is a directory unbork doesn't own | unbork's files go **into that directory** with a `labdog_` prefix, next to the operator's, and Alloy is **reloaded** (no downtime) when the unit supports it. |
+| **adopt_dir** | Package present, `CONFIG_FILE` is a directory unbork doesn't own | unbork's files go **into that directory** with a `unbork_` prefix, next to the operator's, and Alloy is **reloaded** (no downtime) when the unit supports it. |
 | **adopt_file** | Package present, `CONFIG_FILE` is a single file (or unset) | unbork creates `/etc/alloy/conf.d/`, **copies the operator's file in** unchanged (the original stays on disk as a backup), adds its own files, points `CONFIG_FILE` at the directory and **restarts** Alloy. |
 
 ### What counts as unbork's
@@ -74,7 +74,7 @@ Every file this pack writes starts with `// Managed by Ansible`. A file
 without that first line is the operator's: the action never overwrites,
 rewrites or deletes it, and refuses to run if it would have to.
 
-A directory is unbork's when it has the `.labdog-managed` marker, or when
+A directory is unbork's when it has the `.unbork-managed` marker, or when
 one of its files with a bare pack name (`endpoints.alloy`, ...) carries
 the header, which is how installs from older versions of this pack are
 recognised. Being `/etc/alloy/conf.d` is **not** enough on its own: an
@@ -142,9 +142,9 @@ TCP connection to loki.example:3100 failed`.
 
 ### Identity labels
 
-unbork injects `labdog_host_id` and `labdog_hostname` per host. The config
+unbork injects `unbork_host_id` and `unbork_hostname` per host. The config
 stamps both on metrics (`external_labels`) and on logs (the shared
-`loki.relabel "labdog"`), so unbork can query a host's data back on its
+`loki.relabel "unbork"`), so unbork can query a host's data back on its
 host page. Outside unbork they default to empty / `inventory_hostname`, and
 an empty label is dropped.
 
@@ -165,7 +165,7 @@ Set it to `""` to drop nothing.
 ## Upgrading from an older version of this pack
 
 The pack renamed its components (`loki.source.file "file_logs"` became
-`"labdog_file_logs"`, and so on). Alloy keeps each log source's read
+`"unbork_file_logs"`, and so on). Alloy keeps each log source's read
 position under `<storage>/<component id>/`, and a component with no saved
 position starts over. So, the first time the new config is applied, the
 action:
@@ -204,8 +204,8 @@ or `loki.write`. The action refuses such a host until this is done (or
    `grep -rnE '(prometheus\.remote_write|loki\.write)\.<label>' <config dir>`
    (`<label>` is the quoted name, for example `default`). Those are
    `forward_to` lists in other files that the operator owns.
-5. Point those references at unbork's pipeline (`prometheus.remote_write.labdog.receiver`
-   / `loki.relabel.labdog.receiver`), or delete the pipelines that are now
+5. Point those references at unbork's pipeline (`prometheus.remote_write.unbork.receiver`
+   / `loki.relabel.unbork.receiver`), or delete the pipelines that are now
    duplicates of unbork's own (node metrics, journal, `/var/log`, Docker).
 6. Move the endpoints file out of Alloy's config directory (keep it as a
    backup) or delete it.
@@ -262,7 +262,7 @@ At `roles/role-alloy-linux-configure/templates/`:
 | `linux_file_logs.alloy.j2` | `linux_file_logs.alloy` |
 | `docker.alloy.j2` | `docker.alloy` (when Docker runs) |
 
-In `adopt_dir` mode each gets a `labdog_` prefix.
+In `adopt_dir` mode each gets a `unbork_` prefix.
 
 ## Manifest parameters
 

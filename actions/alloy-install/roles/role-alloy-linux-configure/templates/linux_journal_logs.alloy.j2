@@ -1,12 +1,12 @@
 // Managed by Ansible — do not edit manually
 
-loki.source.journal "labdog_journal_logs" {
+loki.source.journal "unbork_journal_logs" {
   max_age       = "24h0m0s"
-  relabel_rules = discovery.relabel.labdog_journal_logs.rules
-  forward_to    = [loki.relabel.labdog.receiver]
+  relabel_rules = discovery.relabel.unbork_journal_logs.rules
+  forward_to    = [loki.relabel.unbork.receiver]
 }
 
-discovery.relabel "labdog_journal_logs" {
+discovery.relabel "unbork_journal_logs" {
   targets = []
 
   rule {

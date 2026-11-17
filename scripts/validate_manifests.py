@@ -8,11 +8,11 @@ Also parses ``pack.yml`` as YAML if present (no Pydantic model exists
 upstream for it; the runtime treats it as a loose dict).
 
 Usage (local):
-    # From the root of a labdog-playbooks checkout:
+    # From the root of an unbork-playbooks checkout:
     python scripts/validate_manifests.py
 
-    # With ActionManifest sourced from a labdog checkout:
-    LABDOG_SRC=/path/to/labdog python scripts/validate_manifests.py
+    # With ActionManifest sourced from an unbork checkout:
+    UNBORK_SRC=/path/to/unbork python scripts/validate_manifests.py
 
     # With an explicit pack root:
     python scripts/validate_manifests.py --pack-root /path/to/pack
@@ -31,25 +31,25 @@ from pathlib import Path
 
 
 def _load_action_manifest_class():
-    """Import ActionManifest from a LABDOG_SRC tree, or fail loudly.
+    """Import ActionManifest from a UNBORK_SRC tree, or fail loudly.
 
     The class lives at ``app.actions.manifest.ActionManifest`` in the
-    labdog repo. We prepend ``<LABDOG_SRC>/backend`` to ``sys.path`` and
+    unbork repo. We prepend ``<UNBORK_SRC>/backend`` to ``sys.path`` and
     import directly — only ``pydantic`` is needed (no DB/Celery deps).
     """
-    labdog_src = os.environ.get("LABDOG_SRC", "").strip()
-    if not labdog_src:
+    unbork_src = os.environ.get("UNBORK_SRC", "").strip()
+    if not unbork_src:
         print(
-            "error: LABDOG_SRC is not set. Point it at a labdog checkout "
+            "error: UNBORK_SRC is not set. Point it at an unbork checkout "
             "(the root, not the backend/ subdir).",
             file=sys.stderr,
         )
         sys.exit(1)
 
-    backend_path = Path(labdog_src) / "backend"
+    backend_path = Path(unbork_src) / "backend"
     if not backend_path.is_dir():
         print(
-            f"error: LABDOG_SRC={labdog_src!r} but {backend_path} does not exist.",
+            f"error: UNBORK_SRC={unbork_src!r} but {backend_path} does not exist.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -63,7 +63,7 @@ def _load_action_manifest_class():
     except ModuleNotFoundError as exc:
         print(
             f"error: cannot import ActionManifest: {exc}. "
-            "Check the LABDOG_SRC path or pip install pydantic.",
+            "Check the UNBORK_SRC path or pip install pydantic.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -140,7 +140,7 @@ def main() -> None:
         "--pack-root",
         type=Path,
         default=Path("."),
-        help="Root of the labdog-playbooks checkout (default: current directory).",
+        help="Root of the unbork-playbooks checkout (default: current directory).",
     )
     args = parser.parse_args()
 

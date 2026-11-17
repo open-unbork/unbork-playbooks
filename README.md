@@ -245,7 +245,7 @@ Every pull request runs the `Validate manifests` job in
 
 Schema typos, missing required fields, and unknown keys (the model
 sets `extra="forbid"`) fail the pipeline pre-merge instead of breaking
-unbork instances at pack-load time. `LABDOG_REPO_REF` in the
+unbork instances at pack-load time. `UNBORK_REPO_REF` in the
 workflow picks the unbork ref (today `main`); pin it to a release tag
 and bump it deliberately when you want this pack to track new schema.
 
@@ -253,7 +253,7 @@ To run the same check locally before pushing:
 
 ```bash
 git clone --depth 1 https://github.com/open-unbork/unbork.git /tmp/unbork
-LABDOG_SRC=/tmp/unbork python scripts/validate_manifests.py
+UNBORK_SRC=/tmp/unbork python scripts/validate_manifests.py
 ```
 
 ## License

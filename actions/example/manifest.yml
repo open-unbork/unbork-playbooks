@@ -21,7 +21,7 @@ parameters:
   - key: marker_dir
     label: Marker directory
     type: string
-    default: /var/lib/labdog-example
+    default: /var/lib/unbork-example
     help_text: >-
       Directory where the probe marker file is written.
       The directory is created if it does not exist.

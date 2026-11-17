@@ -4,7 +4,7 @@
   become: true
 
   vars:
-    marker_dir: /var/lib/labdog-example
+    marker_dir: /var/lib/unbork-example
     simulate_problem: false
     ansible_python_interpreter: auto_silent
 
@@ -48,7 +48,7 @@
     - name: Log an error-priority journal entry (simulate_problem mode)
       ansible.builtin.command:
         cmd: >-
-          logger -p user.err -t labdog-example
+          logger -p user.err -t unbork-example
           "simulated fault for unbork AI verification, written at
           {{ ansible_facts['date_time'].iso8601 }}"
       changed_when: true

@@ -17,7 +17,7 @@ file to the host and verifies it exists. Use it to:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `marker_dir` | string | `/var/lib/labdog-example` | Where the probe marker is written |
+| `marker_dir` | string | `/var/lib/unbork-example` | Where the probe marker is written |
 | `fail_verify` | bool | `false` | Write a sentinel that causes verify to fail, triggering rollback |
 
 ## Lifecycle

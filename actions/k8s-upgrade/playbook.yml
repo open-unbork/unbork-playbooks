@@ -12,7 +12,7 @@
 # `supports_host: false` in the manifest tells unbork to dispatch
 # group-targeted runs as a single ansible-playbook invocation against
 # all members (instead of fanning out per-host). The playbook itself
-# discovers control-plane vs worker nodes — no labdog-side roles or
+# discovers control-plane vs worker nodes — no unbork-side roles or
 # membership attributes involved.
 #
 # Parameters arrive as top-level extra-vars; the role's defaults/main.yml

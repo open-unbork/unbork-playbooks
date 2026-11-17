@@ -7,7 +7,7 @@
 # Facts set here, used by every later role:
 #   _alloy_mode            fresh | adopt_dir | adopt_file
 #   alloy_confd_dir        the directory Alloy will load
-#   alloy_config_prefix    "" or "labdog_" (operator-owned directory)
+#   alloy_config_prefix    "" or "unbork_" (operator-owned directory)
 #   _alloy_live_files      {path in the directory: source path today}
 #   _alloy_pack_written    live paths whose first line is the pack header
 #   _alloy_reload_only     reload (SIGHUP) instead of restart
@@ -100,7 +100,7 @@
       {{ alloy_pack_files | map('regex_replace', '^', _alloy_current_config_target ~ '/') | list }}
   ansible.builtin.set_fact:
     _alloy_pack_written: "{{ _written }}"
-    _alloy_dir_managed_by_labdog: >-
+    _alloy_dir_managed_by_unbork: >-
       {{ (_alloy_target_is_dir | bool)
          and ((_alloy_marker_stat.stat.exists | default(false))
               or (_written | intersect(_bare_pack) | length > 0)) }}
@@ -113,16 +113,16 @@
   ansible.builtin.set_fact:
     _alloy_mode: >-
       {{ 'fresh'
-         if (not _alloy_pkg_present | bool) or (_alloy_dir_managed_by_labdog | bool)
+         if (not _alloy_pkg_present | bool) or (_alloy_dir_managed_by_unbork | bool)
          else ('adopt_dir' if _alloy_target_is_dir | bool else 'adopt_file') }}
 
 - name: Resolve the effective config directory and filename prefix
   ansible.builtin.set_fact:
     alloy_confd_dir: >-
       {{ _alloy_current_config_target
-         if (_alloy_mode == 'adopt_dir' or _alloy_dir_managed_by_labdog | bool)
+         if (_alloy_mode == 'adopt_dir' or _alloy_dir_managed_by_unbork | bool)
          else alloy_confd_dir }}
-    alloy_config_prefix: "{{ 'labdog_' if _alloy_mode == 'adopt_dir' else '' }}"
+    alloy_config_prefix: "{{ 'unbork_' if _alloy_mode == 'adopt_dir' else '' }}"
 
 # {destination path: where its content comes from today}. In adopt_file
 # the operator's single file is copied into the new directory under its
