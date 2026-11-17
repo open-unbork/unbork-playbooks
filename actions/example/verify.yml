@@ -6,14 +6,14 @@
 # automatic snapshot rollback — the host is restored to its pre-run state.
 #
 # This file is also safe to run standalone for debugging:
-#   ansible-playbook verify.yml -i <inventory> -e marker_dir=/var/lib/labdog-example
+#   ansible-playbook verify.yml -i <inventory> -e marker_dir=/var/lib/unbork-example
 
 - name: Verify — example system probe
   hosts: all
   become: true
 
   vars:
-    marker_dir: /var/lib/labdog-example
+    marker_dir: /var/lib/unbork-example
     ansible_python_interpreter: auto_silent
 
   tasks:

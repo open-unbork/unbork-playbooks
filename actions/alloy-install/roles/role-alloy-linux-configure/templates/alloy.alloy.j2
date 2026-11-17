@@ -1,13 +1,13 @@
 // Managed by Ansible — do not edit manually
 
-prometheus.exporter.self "labdog_alloy" {}
+prometheus.exporter.self "unbork_alloy" {}
 
-prometheus.scrape "labdog_alloy" {
-  targets    = prometheus.exporter.self.labdog_alloy.targets
-  forward_to = [prometheus.relabel.labdog_alloy.receiver]
+prometheus.scrape "unbork_alloy" {
+  targets    = prometheus.exporter.self.unbork_alloy.targets
+  forward_to = [prometheus.relabel.unbork_alloy.receiver]
 }
 
-prometheus.relabel "labdog_alloy" {
+prometheus.relabel "unbork_alloy" {
   rule {
     target_label = "job"
     replacement  = "alloy"
@@ -18,5 +18,5 @@ prometheus.relabel "labdog_alloy" {
     replacement  = constants.hostname
   }
 
-  forward_to = [prometheus.remote_write.labdog.receiver]
+  forward_to = [prometheus.remote_write.unbork.receiver]
 }

@@ -35,7 +35,7 @@ They are alternatives, not layers.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `marker_dir` | string | `/var/lib/labdog-example` | Where the probe marker is written |
+| `marker_dir` | string | `/var/lib/unbork-example` | Where the probe marker is written |
 | `simulate_problem` | bool | `false` | Log a real error-priority journal entry for the model to weigh |
 
 `simulate_problem` is **not** the equivalent of `example`'s
@@ -47,7 +47,7 @@ model.
 What it exercises is **attribution**. The evidence includes ten minutes
 of journal errors, and that window is the window the action just ran in
 — so it contains whatever the action itself logged. The prompt says
-entries tagged `labdog-example` come from this probe and should be
+entries tagged `unbork-example` come from this probe and should be
 discounted, so a correct answer is a `PASS` that mentions the entry and
 explains why it did not count.
 
@@ -60,7 +60,7 @@ anomalies behind.
 
 An earlier version of this prompt did not mention attribution. The model
 correctly identified the entry, correctly noted it came from
-`labdog-example`, and failed the host anyway — so unbork restored the
+`unbork-example`, and failed the host anyway — so unbork restored the
 pre-change snapshot and rolled back a run that had worked.
 
 That is the trap every AI verify prompt has to avoid. `linux-upgrade`

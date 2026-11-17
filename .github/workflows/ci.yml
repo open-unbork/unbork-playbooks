@@ -21,23 +21,23 @@ jobs:
         with:
           python-version: "3.12"
 
-      # ActionManifest's validators import the full labdog backend
+      # ActionManifest's validators import the full unbork backend
       # (post_run_register pulls in app.actions.register_schemas -> DB
       # models), so pydantic alone is not enough — install the backend.
-      # Pin LABDOG_REPO_REF to a release tag once labdog cuts them and bump
+      # Pin UNBORK_REPO_REF to a release tag once unbork cuts them and bump
       # it intentionally; until then track the default branch.
-      - name: Fetch labdog (manifest schema source)
-        run: git clone --depth 1 --branch "${LABDOG_REPO_REF:-main}" https://github.com/open-unbork/unbork.git _labdog_src
+      - name: Fetch unbork (manifest schema source)
+        run: git clone --depth 1 --branch "${UNBORK_REPO_REF:-main}" https://github.com/open-unbork/unbork.git _unbork_src
         env:
-          LABDOG_REPO_REF: main
+          UNBORK_REPO_REF: main
 
-      - name: Install labdog backend
+      - name: Install unbork backend
         run: |
           python -m pip install -U pip -q
-          python -m pip install -e _labdog_src/backend -q
+          python -m pip install -e _unbork_src/backend -q
 
       - name: Validate every manifest against ActionManifest
-        run: LABDOG_SRC=_labdog_src python scripts/validate_manifests.py
+        run: UNBORK_SRC=_unbork_src python scripts/validate_manifests.py
 
   ansible-lint:
     name: ansible-lint

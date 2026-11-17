@@ -1,6 +1,6 @@
 // Managed by Ansible — do not edit manually
 
-local.file_match "labdog_file_logs" {
+local.file_match "unbork_file_logs" {
   path_targets = [{% for path in alloy_file_log_paths %}
 
     {
@@ -13,9 +13,9 @@ local.file_match "labdog_file_logs" {
   ]
 }
 
-loki.source.file "labdog_file_logs" {
-  targets    = local.file_match.labdog_file_logs.targets
-  forward_to = [loki.relabel.labdog.receiver]
+loki.source.file "unbork_file_logs" {
+  targets    = local.file_match.unbork_file_logs.targets
+  forward_to = [loki.relabel.unbork.receiver]
   // A file with no saved position is read from its end, not its start.
   // Otherwise a host whose positions were lost (or that is new to this
   // config) re-sends every matching log with today's timestamp.

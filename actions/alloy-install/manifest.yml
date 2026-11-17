@@ -26,7 +26,7 @@ verify_timeout_seconds: 120
 # Tie into unbork's Grafana integration: unbork fills these playbook vars
 # per host from the Mimir / Loki instances that host ships to (its own
 # assignment, its highest-priority group's, or the default), and always
-# injects labdog_host_id / labdog_hostname so the shipped data is
+# injects unbork_host_id / unbork_hostname so the shipped data is
 # queryable back on the host page. Operator-supplied values win.
 metrics_backend:
   prometheus_push_var: alloy_prometheus_url
@@ -69,7 +69,7 @@ parameters:
       prometheus.remote_write or loki.write, because that ships everything
       twice. Tick to add unbork's pipeline next to them anyway.
 
-# After a successful run, register the package + service so labdog
+# After a successful run, register the package + service so unbork
 # manages them going forward (drift checks notice them, Host detail
 # tabs reflect them, future syncs keep them in their declared state).
 # Skipped silently if the operator has already declared either row

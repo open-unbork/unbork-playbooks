@@ -1,8 +1,8 @@
 // Managed by Ansible — do not edit manually
 
-prometheus.exporter.unix "labdog_node_metrics" { }
+prometheus.exporter.unix "unbork_node_metrics" { }
 
-prometheus.scrape "labdog_node_metrics" {
-  targets    = prometheus.exporter.unix.labdog_node_metrics.targets
-  forward_to = [prometheus.remote_write.labdog.receiver]
+prometheus.scrape "unbork_node_metrics" {
+  targets    = prometheus.exporter.unix.unbork_node_metrics.targets
+  forward_to = [prometheus.remote_write.unbork.receiver]
 }

@@ -17,7 +17,7 @@
 - name: Create the staging directory
   ansible.builtin.tempfile:
     state: directory
-    prefix: labdog-alloy-stage.
+    prefix: unbork-alloy-stage.
   register: _alloy_stage_dir
   changed_when: false  # scratch space, not the host's config
   check_mode: false

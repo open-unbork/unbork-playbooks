@@ -98,7 +98,7 @@ See [`manifest.yml`](./manifest.yml).
 | `skip_preflight` | bool | `false` | Bypass the per-node checks (kubelet running, target repository readable, packages downloadable). The apt source is still moved and the cache still refreshed. |
 | `drain_timeout` | int | `300` | Seconds `kubectl drain` may take. A drain that fails for another reason (a transient eviction error, such as an eviction webhook whose pod the drain just moved) is retried up to 4 times, 20 s apart (`k8s_drain_retries`, `k8s_drain_retry_delay`); one that hits this timeout is not. |
 | `drain_force` | bool | `false` | Pass `--force` to `kubectl drain`, deleting pods no controller manages. |
-| `etcd_backup_dir` | string | `/var/lib/labdog/etcd-backups` | Absolute path on the first control-plane node for the etcd snapshot. |
+| `etcd_backup_dir` | string | `/var/lib/unbork/etcd-backups` | Absolute path on the first control-plane node for the etcd snapshot. |
 | `allow_partial_group` | bool | `false` | Proceed when the cluster has nodes outside the targeted group. They stay on their current version. |
 | `skip_capacity_check` | bool | `false` | Run even when the drain capacity check finds a node whose pods would not fit elsewhere. The check still runs and reports. |
 | `surge_node` | string | `""` | A spare host in the group that joins as a temporary worker while the workers are drained. See [Surge node](#surge-node). |
@@ -156,7 +156,7 @@ workers' pods have somewhere to go:
    `kubectl` at the target version on the surge host (and holds them),
    creates a 15-minute join token on the first control-plane node, runs
    `kubeadm join --node-name <inventory hostname>`, deletes the token,
-   annotates the node `labdog.io/k8s-upgrade-surge=true`, and waits for
+   annotates the node `unbork.io/k8s-upgrade-surge=true`, and waits for
    it to be Ready. It joins after the control plane, never before,
    because a kubelet must not be newer than its API server.
 2. The workers are upgraded as usual. Their pods can land on the surge
@@ -223,7 +223,7 @@ as they are.
 ## Failures and re-runs
 
 The node being upgraded carries the annotation
-`labdog.io/k8s-upgrade-cordoned=true` from just before the action
+`unbork.io/k8s-upgrade-cordoned=true` from just before the action
 cordons it until just after it uncordons it. A node the operator had
 already cordoned never gets the annotation, so the action leaves it
 cordoned when it is done.
